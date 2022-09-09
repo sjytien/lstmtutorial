@@ -1,0 +1,28 @@
+def TrainModel_LSTM_Seq2Seq(model, train_dataloader, learning_rate, num_epochs, use_gpu):
+    
+    optimizer = optim.Adam(model.parameters(), lr = learning_rate)
+    criterion = nn.MSELoss()
+
+    epoch_loss = 0
+
+    for data in train_dataloader:
+
+        inputs, labels = data
+        batch_size = inputs.shape[0]
+            
+        if inputs.shape[0] != batch_size:
+            continue
+            
+        if use_gpu:
+            inputs, labels = inputs.cuda(), labels.cuda()
+
+        model.train()
+        optimizer.zero_grad()
+        outputs = model(inputs, labels)
+        print(outputs.shape)
+        loss = criterion(outputs, labels)
+
+        loss.backward()
+        optimizer.step()
+        epoch_loss += loss.item()
+        return epoch_loss / num_epochs
