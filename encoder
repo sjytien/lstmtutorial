@@ -1,0 +1,25 @@
+class lstm_encoder(nn.Module):
+
+    def __init__(self, input_size, hidden_size, num_layers = 1):
+        
+        super(lstm_encoder, self).__init__()
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+
+        self.lstm = nn.LSTM(input_size = input_size, hidden_size = hidden_size,
+                            num_layers = num_layers, batch_first = True)
+        
+    def forward(self, x_input):
+        
+        lstm_out, hidden = self.lstm(x_input)
+        return lstm_out, hidden     
+    
+    def init_hidden(self, x_input):
+        use_gpu = torch.cuda.is_available()
+        if use_gpu:
+            return (torch.zeros(self.num_layers, x_input[0], self.hidden_size).cuda(),
+                torch.zeros(self.num_layers, x_input[0], self.hidden_size).cuda())
+        else:
+            return (torch.zeros(self.num_layers, x_input[0], self.hidden_size),
+                torch.zeros(self.num_layers, x_input[0], self.hidden_size))
