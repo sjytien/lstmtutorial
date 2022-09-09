@@ -1,0 +1,26 @@
+class LSTM_Seq2Seq(nn.Module):
+
+    def __init__(self, encoder, decoder, target_len):
+
+        super(LSTM_Seq2Seq, self).__init__()
+
+        self.encoder = encoder 
+        self.decoder = decoder 
+        self.target_len = target_len
+        
+    def forward(self, inputs, label, teacher_forcing_ratio = 0.5):
+        outputs = torch.zeros(label.shape[0], label.shape[1], label.shape[2])
+        encoder_output, encoder_hidden = self.encoder(inputs)
+        decoder_input = inputs[:, -1, :]
+        
+        decoder_hidden = encoder_hidden
+                
+        for t in range(self.target_len): 
+            decoder_output, decoder_hidden = self.decoder(decoder_input, decoder_hidden)
+            outputs[:,t,:] = decoder_output
+            if random.random() < teacher_forcing_ratio:
+                decoder_input = label[:, t, :]
+            else:
+                decoder_input = decoder_output
+        
+        return outputs
