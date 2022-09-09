@@ -1,0 +1,24 @@
+def EvalModel_LSTM_Seq2Seq(model, valid_dataloader, learning_rate, num_epochs, use_gpu):
+    
+    optimizer = optim.Adam(model.parameters(), lr = learning_rate)
+    criterion = nn.MSELoss()
+
+    epoch_loss = 0
+
+    for data in valid_dataloader:
+
+        inputs, labels = data
+            
+        if use_gpu:
+            inputs, labels = inputs.cuda(), labels.cuda()
+
+        model.eval()
+        optimizer.zero_grad()
+        outputs = model(inputs, labels, teacher_forcing_ratio = 0)
+
+        loss = criterion(outputs, torch.squeeze(labels))
+        loss.backward()
+        optimizer.step()
+        epoch_loss += loss.item()
+        
+    return epoch_loss / num_epochs
