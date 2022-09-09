@@ -52,3 +52,7 @@ def prepare_dataloader(matrix, n_col, seq_len=36, pred_len=12, BATCH_SIZE=32, de
     test_dataloader = utils.DataLoader(test_dataset, batch_size = BATCH_SIZE, shuffle=False, drop_last = False)
 
     return train_dataloader, valid_dataloader, test_dataloader
+    
+data_matrix = load_data("./tps_df.pkl", "2020-01-01 00:00:00.000", "2020-05-31 23:45:00.000", freq="15min")
+input_dim = data_matrix.shape[-1]
+train_dataloader, valid_dataloader, _ = prepare_dataloader(data_matrix, input_dim, BATCH_SIZE=BATCH_SIZE, seq_len=INPUT_LEN, pred_len=PRED_LEN, device="cpu")
